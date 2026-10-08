@@ -33,5 +33,61 @@ namespace SmartWarehouse.Core
             IsAlertTriggered = false;
             CriticalThresholdCelsius = criticalThreshold;
         }
+
+        public void Activate()
+        {
+            IsActive = true;
+        }
+
+        public void Deactivate()
+        {
+            IsActive = false;
+            IsAlertTriggered = false;
+        }
+
+        public void RecordReading(double newTemperature)
+        {
+            if (IsActive == false)
+            {
+                throw new InvalidOperationException("Sensor must be active.");
+            }
+
+            if (newTemperature < -50.0 || newTemperature > 80.0)
+            {
+                throw new ArgumentOutOfRangeException(
+                    nameof(newTemperature), "Temperature must be between -50 and 80.");
+            }
+
+            CurrentTemperature = newTemperature;
+
+            if (CurrentTemperature >= CriticalThresholdCelsius)
+            {
+                IsAlertTriggered = true;
+            }
+            else
+            {
+                IsAlertTriggered = false;
+            }
+        }
+
+        public void UpdateThreshold(double newThreshold)
+        {
+            if (newThreshold < -30.0 || newThreshold > 50.0)
+            {
+                throw new ArgumentOutOfRangeException(
+                    nameof(newThreshold), "Threshold must be between -30 and 50.");
+            }
+
+            CriticalThresholdCelsius = newThreshold;
+
+            if (CurrentTemperature >= CriticalThresholdCelsius)
+            {
+                IsAlertTriggered = true;
+            }
+            else
+            {
+                IsAlertTriggered = false;
+            }
+        }
     }
 }
